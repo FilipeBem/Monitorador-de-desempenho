@@ -51,24 +51,22 @@ def update_char(frame):
         gpu_temp = float(output.decode().split('\n')[1].strip().rstrip('C'))
     except:
         gpu_temp = 0
-    try:
-            output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader'])
-            gpu_temp = float(output.decode().split('\n')[0].rstrip('%'))
-    except:
-            gpu_temp = 0
-
-    try:
-          output = subprocess.check_output(['radeontop', '-d'], stderr=subprocess.DEVNULL)
-          gpu_temp = float(output.decode().split('\n')[1].split()[1].rstrip('%'))
-    except:
-            gpu_temp = 0
-
+    
     #obtendo informação do Disco
     disco_percent = psutil.disk_usage('/').percent
 
     #obtendo informação da VRAM
-    vram = psutil.virtual_memory()
-    vram_percent = vram.percent
+    try:
+            output = subprocess.check_output(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader'])
+            vram_percent = float(output.decode().split('\n')[0].rstrip('%'))
+    except:
+            vram_percent = 0
+
+    try:
+          output = subprocess.check_output(['radeontop', '-d'], stderr=subprocess.DEVNULL)
+          vram_percent = float(output.decode().split('\n')[1].split()[1].rstrip('%'))
+    except:
+           vram_percent = 0 
 
     # calculate FPS
     elapsed_time = time.time() - start_time
